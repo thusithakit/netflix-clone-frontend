@@ -16,6 +16,25 @@ function DetailPage() {
     const { user } = useContext(UserContext);
     const [error, setError] = useState(null);
 
+    const fetchReviews = async () => {
+        try {
+            setIsLoading(true);
+            const response = await api.get(`/reviews/getreviews/${contentId}`);
+            if (response.data) {
+                setReviews(response.data);
+            }
+            setIsLoading(false);
+        } catch (error) {
+            setIsLoading(false);
+            if (error.response) {
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else {
+                console.log(`Error: ${error.message}`)
+            }
+        }
+    }
     useEffect(() => {
         const fetchMovieData = async () => {
             try {
@@ -34,28 +53,9 @@ function DetailPage() {
                 }
             }
         }
-        const fetchReviews = async () => {
-            try {
-                setIsLoading(true);
-                const response = await api.get(`/reviews/getreviews/${contentId}`);
-                if (response.data) {
-                    setReviews(response.data);
-                }
-                setIsLoading(false);
-            } catch (error) {
-                setIsLoading(false);
-                if (error.response) {
-                    console.log(error.response.data);
-                    console.log(error.response.status);
-                    console.log(error.response.headers);
-                } else {
-                    console.log(`Error: ${error.message}`)
-                }
-            }
-        }
         fetchMovieData();
         fetchReviews();
-    }, [contentId, reviews]);
+    }, [contentId]);
     const fetchReview = async () => {
         try {
             setIsLoading(true)
@@ -66,6 +66,8 @@ function DetailPage() {
                 content: comment
             })
             setIsLoading(false);
+            fetchReviews();
+
         } catch (error) {
             setIsLoading(false);
             if (error.response) {
@@ -114,7 +116,7 @@ function DetailPage() {
                             </div>
                             {reviews && reviews.length > 0 && (
                                 reviews.map(review => (
-                                    <ReviewCard key={review.id} id={review.id} rating={review.rating} content={review.content} ratedUser={review.userId} />
+                                    <ReviewCard key={review.id} id={review.id} rating={review.rating} content={review.content} ratedUser={review.userId} fetchReviews={fetchReviews} />
                                 ))
                             )}
                         </div>

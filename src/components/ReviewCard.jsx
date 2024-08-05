@@ -3,12 +3,13 @@ import { UserContext } from '../context/UserContext';
 import api from '../api/auth';
 import { FaStar } from 'react-icons/fa';
 
-function ReviewCard({ id, rating, content, ratedUser }) {
+function ReviewCard({ id, rating, content, ratedUser, fetchReviews }) {
     const { user } = useContext(UserContext);
     const deleteReview = async () => {
         try {
             const response = await api.delete(`/reviews/deleteReview/${id}`);
             console.log(response.data);
+            fetchReviews();
         } catch (error) {
             if (error.response) {
                 console.log(error.response.data);
